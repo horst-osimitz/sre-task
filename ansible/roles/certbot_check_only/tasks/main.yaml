@@ -1,0 +1,54 @@
+- name: Check if certificate file exists
+  stat:
+    path: "{{ cert_path }}"
+  register: cert_file
+
+- name: Assume invalid cert if file missing (cert_file_exists fact)
+  set_fact:
+    # cert_valid: false
+    cert_file_exists: false
+  when: not cert_file.stat.exists
+
+- name: Check and calculate cert validity
+  when: cert_file.stat.exists
+  block:
+  - name: Set cert_file_exists fact
+    set_fact:
+        cert_file_exists: true
+  - name: Check certificate expiry date
+    command: openssl x509 -enddate -noout -in "{{ cert_path }}"
+    register: cert_expiry
+    when: cert_file.stat.exists
+    changed_when: false
+    failed_when: cert_expiry.rc != 0
+
+  - name: Gather facts (including ansible_date_time)
+    setup:
+
+  - name: Extract certificate expiry date string
+    set_fact:
+      cert_expiry_date_raw: "{{ cert_expiry.stdout | regex_replace('notAfter=', '') }}"
+    when: cert_file.stat.exists
+
+  - name: Get current time as raw string
+    set_fact:
+      now_utc_raw: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+
+  - name: Calculate cert validity period (in days)
+    set_fact:
+      cert_days_remaining: >-
+        {{
+          (
+            (cert_expiry_date_raw | to_datetime('%b %d %H:%M:%S %Y %Z')) -
+            (now_utc_raw | to_datetime('%Y-%m-%dT%H:%M:%SZ'))
+          ).total_seconds() / 86400
+        | round(0, 'floor') }}
+    when: cert_file.stat.exists
+
+  - name: Set cert_valid fact
+    set_fact:
+      cert_valid: "{{ cert_days_remaining | int >= min_valid_days }}"
+
+  - name: Debug certificate status
+    debug:
+      msg: "Certificate valid: {{ cert_valid }}, days remaining: {{ cert_days_remaining }}"

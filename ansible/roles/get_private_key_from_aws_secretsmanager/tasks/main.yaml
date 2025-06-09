@@ -1,0 +1,15 @@
+---
+- name: Ensure private key path exists
+  ansible.builtin.file:
+    path: /tmp/ansible
+    state: directory
+- name: Get EC2 private key from AWS Secrets Manager
+  ansible.builtin.debug:
+    msg="{{ lookup('amazon.aws.aws_secret', '{{ secret_name }}') }}"
+  no_log: true
+  register: ec2_private_key
+- name: Write private key to file
+  copy:
+    content: "{{ ec2_private_key.msg}}"
+    dest: "{{ private_key_path }}"
+    mode: '0600'

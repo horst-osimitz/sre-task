@@ -1,0 +1,29 @@
+---
+- name: Ensure docker is installed
+  ansible.builtin.command:
+    cmd: docker --version
+  register: docker_version
+- name: Show docker version
+  debug:
+    msg: "{{docker_version.stdout}}"
+- name: Clone dockersamples/linux_tweet_app Github Repository
+  ansible.builtin.git:
+    repo: https://github.com/dockersamples/linux_tweet_app.git
+    dest: /tmp/checkout/webapp
+    single_branch: true
+    version: master
+# - name: Build image with {{ webapp_tag }} tag
+#   community.docker.docker_image_build:
+#     name: localhost/webapp:{{webapp_tag}}
+#     path: /tmp/checkout/webapp
+#     dockerfile: Dockerfile
+#     outputs:
+#       - type: docker
+- name: Build image with {{ webapp_tag }} tag
+  ansible.builtin.command:
+    cmd: |
+      docker buildx build /tmp/checkout/webapp --tag localhost/webapp:{{webapp_tag}} --output "type=docker" --progress plain
+- name: Tag image with latest tag
+  community.docker.docker_image_tag:
+    name: localhost/webapp:{{webapp_tag}}
+    repository: [localhost/webapp:latest]

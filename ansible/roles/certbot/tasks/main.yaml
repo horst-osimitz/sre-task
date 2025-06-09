@@ -1,0 +1,61 @@
+- name: Set certbot action needed flags
+  set_fact:
+    need_cert_issuance: "{{ not (cert_file_exists | default(false) | bool) }}"
+    need_cert_renewal: "{{ (cert_file_exists | default(false) | bool) and not (cert_valid | default(false) | bool) }}"
+
+- name: Run certbot to issue new certificate
+  command: >
+    docker run --rm
+    -v {{ certbot_webroot }}:/var/www/certbot
+    -v /etc/letsencrypt:/etc/letsencrypt
+    certbot/certbot certonly --webroot
+    --webroot-path /var/www/certbot
+    --email {{ email }}
+    --agree-tos
+    --no-eff-email
+    -d {{ domain_name }}
+  register: certbot_output
+  changed_when: "'Congratulations' in certbot_output.stdout"
+  when: need_cert_issuance
+
+- name: Run certbot to renew certificate
+  command: >
+    docker run --rm
+    -v {{ certbot_webroot }}:/var/www/certbot
+    -v /etc/letsencrypt:/etc/letsencrypt
+    certbot/certbot renew
+    --webroot
+    --webroot-path /var/www/certbot
+  register: certbot_renew_output
+  changed_when: "'No renewals were attempted' not in certbot_renew_output.stdout"
+  when: need_cert_renewal
+
+- name: Debug Certbot issuance output
+  debug:
+    var: certbot_output.stdout_lines
+  when:
+    - certbot_output is defined
+    - certbot_output is not skipped
+
+- name: Debug Certbot renewal output
+  debug:
+    var: certbot_renew_output.stdout_lines
+  when:
+    - certbot_renew_output is defined
+    - certbot_renew_output is not skipped
+
+- name: Wait for Certbot certificate and key
+  block:
+    - name: Wait for fullchain.pem
+      wait_for:
+        path: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+        state: present
+        timeout: 120
+
+    - name: Wait for privkey.pem
+      wait_for:
+        path: /etc/letsencrypt/live/{{ domain_name }}/privkey.pem
+        state: present
+        timeout: 120
+  when: need_cert_issuance or need_cert_renewal
+

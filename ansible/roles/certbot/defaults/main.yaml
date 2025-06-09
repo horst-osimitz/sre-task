@@ -1,0 +1,1 @@
+cert_path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"

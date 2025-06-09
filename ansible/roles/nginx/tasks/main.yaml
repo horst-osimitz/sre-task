@@ -1,0 +1,49 @@
+---
+- name: Create directories for NGINX and certs
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+  loop: ["{{ nginx_conf_dir }}","{{ nginx_conf_dir }}/prepare"]
+
+- name: Create NGINX reverse proxy config for certbot
+  copy:
+    dest: "{{ nginx_conf_dir }}/prepare/reverse-proxy.conf"
+    content: |-
+      server {
+          listen 80;
+          server_name {{ domain_name }};
+          location /.well-known/acme-challenge/ {
+              root /var/www/certbot;
+          }
+          location / {
+              return 503 "Certificate not yet issued.\n";
+          }
+      }
+
+- name: Create NGINX reverse proxy config with redirect
+  copy:
+    dest: "{{ nginx_conf_dir }}/prepare/reverse-proxy-ssl.conf"
+    content: |-
+      server {
+          listen 80;
+          server_name {{ domain_name }};
+          return 301 https://$host$request_uri;
+      }
+
+      server {
+          listen 443 ssl;
+          server_name {{ domain_name }};
+
+          ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+          ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+          location / {
+              proxy_pass http://tweet-app:80;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+      }
+
