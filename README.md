@@ -97,7 +97,8 @@ The following resources are required:
 
 Used tool: **Terraform**
 
-> [!NOTE] Folder structure
+> [!NOTE]
+> Folder structure
 > ```bash
 > terraform
 > └── ec2
@@ -166,7 +167,8 @@ for secret in ec2-private-key ec2-public-key ; do aws secretsmanager delete-secr
  
 ## Ansible Playbook
     
-> [!NOTE] Folder strucutre
+> [!NOTE]
+> Folder strucutre:
 > ```bash
 > ansible
 > ├── inventories
