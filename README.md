@@ -97,6 +97,28 @@ The following resources are required:
 
 Used tool: **Terraform**
 
+> [!NOTE] Folder structure
+> ```bash
+> terraform
+> └── ec2
+>    ├── config.tf
+>    ├── ec2-key-ansible.pem
+>    ├── ec2-key-webserver.pem
+>    ├── ec2-webserver-keypair.tf
+>    ├── ec2-webserver.tf
+>    ├── elastic-ip.tf
+>    ├── main.tf
+>    ├── outputs.tf
+>    ├── plan.out
+>    ├── security_group_webserver.tf
+>    ├── terraform.tfstate
+>    ├── terraform.tfstate.backup
+>    └── userdata
+>        └── webserver-userdata.sh
+>
+> 3 directories, 13 files
+>```
+
 ##### Get EC2 Private Key from AWS Secretsmanager
 
 ```bash
@@ -141,3 +163,46 @@ for secret in ec2-private-key ec2-public-key ; do aws secretsmanager delete-secr
 
 > [!NOTE]
 > The permanent deletion of secrets in AWS Secretsmanager can take several minutes!
+ 
+## Ansible Playbook
+    
+> [!NOTE] Folder strucutre
+> ```bash
+> ansible
+> ├── inventories
+> │   └── demo
+> │       └── hosts
+> ├── main.yaml
+> └── roles
+>     ├── build
+>     │   └── tasks
+>     │       └── main.yaml
+>     ├── certbot
+>     │   ├── defaults
+>     │   │   └── main.yaml
+>     │   └── tasks
+>     │       └── main.yaml
+>     ├── certbot_check_only
+>     │   ├── defaults
+>     │   │   └── main.yaml
+>     │   └── tasks
+>     │       └── main.yaml
+>     ├── compose
+>     │   └── tasks
+>     │       └── main.yaml
+>     ├── get_private_key_from_aws_secretsmanager
+>     │   ├── defaults
+>     │   │   └── main.yaml
+>     │   └── tasks
+>     │       └── main.yaml
+>     └── nginx
+>         ├── defaults
+>         │   └── main.yaml
+>         └── tasks
+>             └── main.yaml
+> 
+> 20 directories, 12 files
+
+
+## Findings
+tbd
