@@ -2,7 +2,7 @@
 
 ## Task description
 
-[SRE-Task assignment](assets/SRE-Task.png)
+![Diagram](assets/sre-task-diagram.png)
 
 ## Precondition
 

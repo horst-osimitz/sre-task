@@ -2,9 +2,14 @@
 
 ## Toolstack
 
+Ansible:
 - ansible
+- Python 3.12.1
+
+Webserver:
 - docker
 - docker-compose
+- Python 3.11.2
 
 ## Ansible
 
@@ -72,6 +77,13 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         "github-token"
     ]
     ```
+- VPC Main Route Table:
+    ```bash
+    aws ec2 describe-route-tables --query 'RouteTables[?Associations[?Main==`true`]].RouteTableId'
+    [
+        "rtb-0ad33d4e96db16415"
+    ]
+    ```
 ### Steps
 
 #### Install AWS CLI
@@ -96,21 +108,21 @@ Used tool: **Terraform**
 > ```bash
 > terraform
 > └── ec2
->    ├── config.tf
->    ├── ec2-key-ansible.pem
->    ├── ec2-key-webserver.pem
->    ├── ec2-webserver-keypair.tf
->    ├── ec2-webserver.tf
->    ├── elastic-ip.tf
->    ├── main.tf
->    ├── outputs.tf
->    ├── plan.out
->    ├── security_group_webserver.tf
->    ├── terraform.tfstate
->    ├── terraform.tfstate.backup
->    └── userdata
->        └── webserver-userdata.sh
->
+>     ├── config.tf
+>     ├── ec2-key-webserver.pem
+>     ├── ec2-webserver-keypair.tf
+>     ├── ec2-webserver.tf
+>     ├── elastic-ip.tf
+>     ├── internet-gateway.tf
+>     ├── main.tf
+>     ├── outputs.tf
+>     ├── plan.out
+>     ├── security_group_webserver.tf
+>     ├── terraform.tfstate
+>     ├── terraform.tfstate.backup
+>     └── userdata
+>         └── webserver-userdata.sh
+> 
 > 3 directories, 13 files
 >```
 
@@ -138,15 +150,29 @@ aws ec2 describe-instances --query 'Reservations[].Instances[?State.Name==`runni
 
 ### Connect to EC2 Instance
 
+To connect to an EC2 Instance, the EC2 Private Key is required. The easiest way is to fetch the key from the AWS Secretsmanager, where Terraform stores the secrets in:
+
+```bash
+aws secretsmanager get-secret-value --secret-id ec2/webserver/private-key --query SecretString --output text > ec2-key-webserver.pem && chmod 600 ec2-key-webserver.pem
+```
+
+By default, the login user has limited permissions. In case admin permissions are required, you can escalate to the root user using `sudo su -`.
+
 #### SSH
 
-tbd
+```bash
+ssh -i ec2-key-webserver.pem admin@<ec2-instance-public-dns>
+```
+
+Example: `ec2-35-158-140-221.eu-central-1.compute.amazonaws.com`
 
 #### AWS CLI
 
 ```bash
-aws ec2-instance-connect ssh --instance-id i-083bbc000527fa9b5 --private-key-file ec2-key.pem
+aws ec2-instance-connect ssh --instance-id <instance-id> --private-key-file ec2-key.pem
 ```
+
+Example: `i-0a6a6ce2956060b99`
 
 ### Delete EC2 instance and infrastructure
 
