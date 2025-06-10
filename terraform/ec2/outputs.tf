@@ -18,9 +18,9 @@ output "ec2_key_aws_ssm_webserver" {
   value       = aws_secretsmanager_secret.private_key_webserver.arn
 }
 
-output "aws_eip_webserver" {
+output "ec2_instance_webserver_public_ip" {
   description = "Webserver EC2 Instance public IP"
-  value       = aws_eip.ec2_instance_webserver.public_ip
+  value       = module.ec2_instance_webserver.public_ip
 }
 
 output "ec2_instance_webserver_private_ip" {

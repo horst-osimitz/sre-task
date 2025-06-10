@@ -13,21 +13,22 @@ module "ec2_sg_webserver" {
       to_port     = 22
       protocol    = "tcp"
       description = "Allow SSH connections from MacBookPro4OH"
-      cidr_blocks = join(",", concat(local.private_subnet_cidr_blocks, [local.operator_ip]))
+      cidr_blocks = join(",", concat(local.private_subnet_cidr_blocks, [local.operator_ip, local.mobile_ip]))
     },
     {
       from_port   = 80
       to_port     = 80
       protocol    = "tcp"
       description = "Allow http connection from MacBookPro4OH"
-      cidr_blocks = join(",", concat(local.private_subnet_cidr_blocks, [local.operator_ip, "${aws_eip.ec2_instance_webserver.public_ip}/32", "0.0.0.0/0"]))
+      # cidr_blocks = join(",", concat(local.private_subnet_cidr_blocks, [local.operator_ip, "${aws_eip.ec2_instance_webserver.public_ip}/32", "0.0.0.0/0"]))
+      cidr_blocks = "0.0.0.0/0"
     },
     {
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
       description = "Allow https connection from MacBookPro4OH"
-      cidr_blocks = local.operator_ip
+      cidr_blocks = join(",", ["${local.operator_ip}", "${local.mobile_ip}"])
     },
   ]
 
@@ -38,7 +39,8 @@ module "ec2_sg_webserver" {
     },
     {
       rule        = "http-80-tcp"
-      cidr_blocks = "${aws_eip.ec2_instance_webserver.public_ip}/32"
+      cidr_blocks = "0.0.0.0/0"
+      # cidr_blocks = "${module.ec2_instance_webserver.public_ip}/32"
     },
   ]
 }

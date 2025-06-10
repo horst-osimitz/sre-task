@@ -13,6 +13,8 @@ module "ec2_instance_webserver" {
   user_data                   = file("userdata/webserver-userdata.sh")
   user_data_replace_on_change = true
 
+  depends_on = [aws_internet_gateway.igw]
+
   tags = {
     Terraform   = "true"
     Environment = "prod"
