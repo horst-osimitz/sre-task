@@ -253,3 +253,21 @@ key_type = ecdsa
 [[webroot_map]]
 app-rgitoh.zapto.org = /var/www/certbot
 ```
+
+To automatically check the SSL certificate and renew it in case required, crontab can be used.
+
+1. Write a shell script `scripts/renew_certificate.sh`:
+    ```bash
+    #!/bin/bash
+
+    export PATH=/usr/local/bin:$PATH
+    export ANSIBLE_CONFIG=/Users/horstosimitz/.ansible.cfg
+
+    cd /Users/horstosimitz/github/com/horst-osimitz/sre-task/ansible/
+    ansible-playbook -i inventories/demo -u ansible renew-certificate.yaml --extra-vars "{\"domain_name\": \"$1\"}" > /var/log/ansible/renew_certificate_app.log 2>&1
+    ```
+2. Add new cron job:
+    ```bash
+    0 23 * * * TZ=Europe/Vienna /Users/horstosimitz/github/com/horst-osimitz/sre-task/ansible/scripts/renew_certicates.sh app-rgitoh.zapto.org
+    ```
+    Explanation: Every day at 23:00 in Europe/Vienna time zone the shell script is executed to check and renew the SSL certificate for the domain name `app-rgitoh.zapto.org`. The Ansible playbook output will be redirected in a seperate log file `/var/log/ansible/renew_certificate_app.log`.
