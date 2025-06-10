@@ -29,3 +29,6 @@ terraform.rc
 
 # Ignore .tarraform.lock.hcl
 .terraform.lock.hcl
+
+# Ignore EC2 Key Pairs
+*.pem
