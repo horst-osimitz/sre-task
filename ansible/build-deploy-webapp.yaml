@@ -8,7 +8,6 @@
   become: true
   roles:
     - role: 'roles/build'
-      when: enable_build == true
 - hosts: webserver
   gather_facts: false
   vars:
@@ -16,11 +15,8 @@
     docker_conf_dir: /tmp/ansible/docker
     ssl_cert_dir: /tmp/ansible/nginx-cert
     certbot_webroot: /tmp/ansible/certbot/webroot
-    services:
-    - tweet-app
-    - nginx
     domain_name: app-rgitoh.zapto.org
-    email: admin@rgitoh.at
+    email: admin@rgit.at
   roles:
     - role: 'roles/nginx'
     - role: 'roles/compose'

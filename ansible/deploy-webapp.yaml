@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  gather_facts: false
+  roles:
+    - role: get_private_key_from_aws_secretsmanager
+- hosts: webserver
+  gather_facts: false
+  vars:
+    nginx_conf_dir: /tmp/ansible/nginx
+    docker_conf_dir: /tmp/ansible/docker
+    certbot_webroot: /tmp/ansible/certbot/webroot
+    domain_name: app-rgitoh.zapto.org
+    email: admin@rgit.at
+  roles:
+    - role: 'roles/nginx'
+    - role: 'roles/compose'
+      become: true

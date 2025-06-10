@@ -1,0 +1,22 @@
+- name: Get container info for each service
+  community.docker.docker_container_info:
+    name: "{{ item }}"
+  loop: "{{ services }}"
+  register: container_info
+  ignore_errors: true
+
+- name: Determine if any container is running
+  set_fact:
+    any_running: >-
+      {{
+        container_info.results | selectattr('container', 'defined')
+                               | selectattr('container', '!=', None)
+                               | selectattr('container.State.Running', 'equalto',
+      true)
+                               | list
+                               | length > 0
+      }}
+
+- name: Show debug info
+  debug:
+    msg: "Any running containers? {{ any_running }}"

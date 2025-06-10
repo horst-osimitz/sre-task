@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  gather_facts: false
+  roles:
+    - role: get_private_key_from_aws_secretsmanager
+- hosts: webserver
+  gather_facts: false
+  vars:
+    nginx_conf_dir: /tmp/ansible/nginx
+    docker_conf_dir: /tmp/ansible/docker
+    certbot_webroot: /tmp/ansible/certbot/webroot
+  roles:
+    - role: 'certbot_check_only'
+      become: true
+    - role: 'certbot'
+      become: true
+      when: not ( cert_valid | default(false) | bool )

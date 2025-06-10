@@ -9,13 +9,16 @@
 - name: Check certificate status
   import_role:
     name: certbot_check_only
+  when: desired_state == "running"
 
 - name: Copy HTTP-only config to default.conf
   copy:
     remote_src: yes
     src: "{{ nginx_conf_dir }}/prepare/reverse-proxy.conf"
     dest: "{{ nginx_conf_dir }}/default.conf"
-  when: not (cert_valid | default(false) | bool) or not (cert_file_exists | default(false) | bool)
+  when: 
+  - not (cert_valid | default(false) | bool) or not (cert_file_exists | default(false) | bool)
+  - desired_state == "running"
 
 - name: Copy HTTPS config with SSL config and redirect
   copy:
@@ -24,87 +27,66 @@
     dest: "{{ nginx_conf_dir }}/default.conf"
   when: cert_valid | default(false) | bool
 
-- name: Copy docker-compose.yml
-  copy:
+- name: Create docker-compose.yaml
+  ansible.builtin.template:
+    src: templates/docker-compose.yaml.j2
     dest: "{{ docker_conf_dir }}/docker-compose.yml"
-    content: |
-      version: '3'
-      services:
-        tweet-app:
-          image: localhost/webapp:{{ webapp_tag | default("latest") }}
-          container_name: tweet-app
-          expose:
-            - "8080"
-          ports:
-            - "8080:80"
-          networks:
-            - app-network
-        nginx:
-          image: nginx:latest
-          container_name: nginx-reverse-proxy
-          depends_on:
-            - tweet-app
-          ports:
-            - "80:80"
-            - "443:443"
-          volumes:
-            - {{ nginx_conf_dir }}:/etc/nginx/conf.d
-            - {{ certbot_webroot }}:/var/www/certbot
-            - /etc/letsencrypt:/etc/letsencrypt:ro
-          networks:
-            - app-network
-      networks:
-        app-network:
-          driver: bridge
 
-- name: Get container info for each service
-  community.docker.docker_container_info:
-    name: "{{ item }}"
-  loop: "{{ services }}"
-  register: container_info
-  ignore_errors: true
-- name: Determine if any container is running
-  set_fact:
-    any_running: >-
-      {{
-        container_info.results | selectattr('container', 'defined')
-                               | selectattr('container', '!=', None)
-                               | selectattr('container.State.Running', 'equalto',
-      true)
-                               | list
-                               | length > 0
-      }}
+- name: Determine any running services
+  ansible.builtin.import_role:
+    name: determine_running_services
+  vars:
+    services:
+    - tweet-app
+    - nginx
 
-- name: Show debug info
-  debug:
-    msg: "Any running containers? {{ any_running }}"
+- name: Start services conditionally
+  ansible.builtin.set_fact:
+    _trigger: true
+  notify: "start docker services"
+  changed_when: true
+  when: 
+  - not any_running
+  - desired_state == "running"
 
-- name: Bring services up if none are running
-  ansible.builtin.command: docker-compose up -d
-  args:
-    chdir: "{{ docker_conf_dir }}"
-  when: not any_running
+- name: Recreating services conditionally
+  ansible.builtin.set_fact:
+    _trigger: true
+  notify: "recreate docker services"
+  changed_when: true
+  when: 
+  - any_running
+  - desired_state == "running"
 
-- name: Recreate services if at least one is running
-  ansible.builtin.shell: |
-    docker-compose down
-    docker-compose up -d
-  args:
-    chdir: "{{ docker_conf_dir }}"
-  when: any_running
+- name: Stop services conditionally
+  ansible.builtin.set_fact:
+    _trigger: true
+  notify: "stop docker services"
+  changed_when: true
+  when: 
+  - any_running
+  - desired_state == "stopped"
+
+- name: Flush handlers early
+  meta: flush_handlers
 
 - name: Issue or renew certificate if required
   import_role:
     name: certbot
+  when: desired_state == "running"
 
 - name: Replace HTTP-only config with SSL config
   copy:
     remote_src: yes
     src: "{{ nginx_conf_dir }}/prepare/reverse-proxy-ssl.conf"
     dest: "{{ nginx_conf_dir }}/default.conf"
-  when: not (cert_valid | default(false) | bool)
+  when: 
+  - not (cert_valid | default(false) | bool)
+  - desired_state == "running"
 
 - name: Reload NGINX
   command: docker exec nginx-reverse-proxy nginx -s reload
-  when: not (cert_valid | default(false) | bool)
+  when:
+  - not (cert_valid | default(false) | bool)
+  - desired_state == "running"
 

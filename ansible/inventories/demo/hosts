@@ -1,10 +1,8 @@
 [buildserver]
-#localhost ansible_connection=local
-ec2-18-197-13-145.eu-central-1.compute.amazonaws.com
+ec2-35-158-140-221.eu-central-1.compute.amazonaws.com
 
 [webserver]
-#localhost ansible_connection=local
-ec2-18-197-13-145.eu-central-1.compute.amazonaws.com
+ec2-35-158-140-221.eu-central-1.compute.amazonaws.com
 
 [buildserver:vars]
 ansible_user=admin

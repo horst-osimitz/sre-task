@@ -1,0 +1,29 @@
+version: '3'
+services:
+  tweet-app:
+    image: {{ image_name }}:{{ image_tag | default("latest") }}
+    container_name: tweet-app
+    expose:
+      - "8080"
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+  nginx:
+    image: nginx:latest
+    container_name: nginx-reverse-proxy
+    depends_on:
+      - tweet-app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - {{ nginx_conf_dir }}:/etc/nginx/conf.d
+      - {{ certbot_webroot }}:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
+
