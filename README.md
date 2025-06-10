@@ -205,6 +205,34 @@ for secret in ec2-private-key ec2-public-key ; do aws secretsmanager delete-secr
 > 
 > 20 directories, 12 files
 
+### Build only
 
-## Findings
-tbd
+Builds only the the required image.
+
+```bash
+ansible-playbook -i inventories/demo -u ansible build.yaml --extra-vars='{"repository": "dockersamples/linux_tweet_app", "branch": "master", "image_name": "localhost/webapp", "image_tag": "1.0", "tag_image_latest": true}'
+```
+
+### Deployment only
+
+defaults:
+- desired_state:  
+  - running (default)
+  - stopped
+
+Deploys and starts the application and NGINX as a reverse-proxy. Additionally, certbot runs to issue or renew the SSL certificate.
+
+> [!NOTE]
+> Due to the reason, that the deployment process is designed specifically for the webapp ausing a reverse-proxy, some variables such as `domain_name` and `email` have been definded within the Ansible playbook. However, in case required, the variables can be overwritten in the `extra-vars`. Also, this variables specifically are shared with multiple roles. So `defaults` per role has not been implemented for the time being.
+> 
+- desired_state: "running":
+    ```bash
+    ansible-playbook -i inventories/demo -u ansible deploy-webapp.yaml --extra-vars='{"image_name": "localhost/webapp", "image_tag": "1.0"}'
+    ```
+    ```bash
+    ansible-playbook -i inventories/demo -u ansible deploy-webapp.yaml --extra-vars='{"image_name": "localhost/webapp", "image_tag": "1.0", "desired_state": "running"}'
+    ```
+- desired_state: "stopped":
+    ```bash
+    ansible-playbook -i inventories/demo -u ansible deploy-webapp.yaml --extra-vars='{"image_name": "localhost/webapp", "image_tag": "1.0", "desired_state": "stopped"}'
+    ```
