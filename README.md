@@ -232,7 +232,7 @@ ok: [ec2-35-158-140-221.eu-central-1.compute.amazonaws.com] => {
 }
 ```
 
-The Let's Encrypt ACME Server only allows a renewal 30 days before expiry. See the `/etc/letsencrypt/renewal/app-rgitoh.zapto.org.conf` for furhter details:
+The Let's Encrypt ACME Server only allows a renewal 30 days before expiry. See the `/etc/letsencrypt/renewal/app-rgitoh.zapto.org.conf` for further details:
 
 ```bash
 # renew_before_expiry = 30 days
