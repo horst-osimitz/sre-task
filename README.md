@@ -7,6 +7,54 @@
 ## Precondition
 
 For more details about the preconditions please see the [SETUP.md](SETUP.md).
+
+## Steps to initially build and deploy the webapp
+
+1. Provision EC2 Instance
+    ```bash
+    terraform plan -out=plan.out && terraform apply plan.out
+    ```
+2. Update Ansible inventories `ansible/inventories/demo/hosts`
+    ```bash
+    [buildserver]
+    ec2-35-158-140-221.eu-central-1.compute.amazonaws.com -> new EC2 Public DNS
+
+    [webserver]
+    ec2-35-158-140-221.eu-central-1.compute.amazonaws.com -> new EC2 Public DNS
+    ```
+    > [!TIP]
+    > The command `terraform output` displays the defined output variables.  
+    > Example:
+    > ```bash
+    > ec2_instance_id_webserver = "i-0a6a6ce2956060b99"
+    > ec2_instance_state_webserver = "running"
+    > ec2_instance_webserver = "ec2-35-158-140-221.eu-central-1.compute.amazonaws.com"
+    > ec2_instance_webserver_private_ip = "172.31.32.110"
+    > ec2_instance_webserver_public_ip = "35.158.140.221"
+    > ec2_key_aws_ssm_webserver = "arn:aws:secretsmanager:eu-central-1:723952339148:secret:ec2/webserver/private-key-7Uxopv"
+    > ```
+3. Build new docker image version
+    ```bash
+    ansible-playbook -i inventories/demo \
+      -u ansible build.yaml \
+      --extra-vars='{"repository": "dockersamples/linux_tweet_app", "branch": "master", "image_name": "localhost/webapp", "image_tag": "1.0", "tag_image_latest": true}'
+    ```
+4. Deploy the web application
+    ```bash
+    ansible-playbook -i inventories/demo \
+      -u ansible deploy-webapp.yaml \
+      --extra-vars='{"image_name": "localhost/webapp", "image_tag": "1.0"}'
+    ```
+> [!TIP]
+> Optionally, step 3 and 4 can be combined by running the "build and deploy"
+> ```bash
+> ansible-playbook -i inventories/demo \
+>   -u ansible build-deploy-webapp.yaml \
+>   --extra-vars='{"repository": "dockersamples/linux_tweet_app", "branch": "master", "image_name": "localhost/webapp", "image_tag": "1.0", "tag_image_latest": true}'
+> ```
+ 
+5. Optional: Connect to EC2 Instance  
+For further details about how to connect to an EC2 Instance please see the respective [documentation](SETUP.md#connect-to-ec2-instance)
  
 ## Ansible Playbooks
     
