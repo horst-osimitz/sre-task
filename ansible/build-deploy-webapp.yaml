@@ -15,7 +15,7 @@
     docker_conf_dir: /tmp/ansible/docker
     ssl_cert_dir: /tmp/ansible/nginx-cert
     certbot_webroot: /tmp/ansible/certbot/webroot
-    domain_name: app-rgitoh.zapto.org
+    domain_name: app-rgitoh.ddns.net
     email: admin@rgit.at
   roles:
     - role: 'roles/nginx'
