@@ -1,7 +1,7 @@
 # NGINX Reverse Proxy with SSL
 
 > [!IMPORTANT]
-> First and foremost, please be aware that due to security reasons the access to the web application is restricted to single IP address. For furhter details please see the local variables (`local.operator_ip` and `local.mobile_ip`) in [main.yaml](terraform/ec2/main.tf) and the security group rules in [security_group_webserver.tf](terraform/ec2/security_group_webserver.tf).
+> First and foremost, please be aware that due to security reasons the access to the web application is restricted to single IP addresses. For furhter details please see the local variables (`local.operator_ip` and `local.mobile_ip`) in [main.yaml](terraform/ec2/main.tf) and the security group rules in [security_group_webserver.tf](terraform/ec2/security_group_webserver.tf).
 
 ## Task description
 
