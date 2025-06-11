@@ -85,6 +85,7 @@
   - desired_state == "running"
 
 - name: Reload NGINX
+  become: true
   command: docker exec nginx-reverse-proxy nginx -s reload
   when:
   - not (cert_valid | default(false) | bool)
