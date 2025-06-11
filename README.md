@@ -86,7 +86,7 @@ For further details about how to connect to an EC2 Instance please see the respe
 > }
 > ```
 
-## Steps to decomission the whole infrastructure
+## Steps to decommission the whole infrastructure
 
 1. Decommission EC2 instance
     ```bash
