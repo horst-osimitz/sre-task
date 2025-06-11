@@ -86,6 +86,9 @@ For further details about how to connect to an EC2 Instance please see the respe
 > }
 > ```
 
+> [!IMPORTANT]
+> Please be aware that for security reasons the access to the web application is restricted to single IP addresses.
+
 ## Steps to decommission the whole infrastructure
 
 1. Decommission EC2 instance
