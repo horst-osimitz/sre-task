@@ -57,7 +57,7 @@ For more details about the preconditions please see the [SETUP.md](SETUP.md).
 > ```
  
 6. Optional: Connect to EC2 Instance  
-For further details about how to connect to an EC2 Instance please see the respective [documentation](SETUP.md#connect-to-ec2-instance)
+For further details about how to connect to an EC2 Instance please see the respective [documentation](SETUP.md#connect-to-ec2-instance).
 
 7. Access the deployed web application under [https://app-rgitoh.zapto.org](https://app-rgitoh.zapto.org).
 > [!NOTE]
@@ -96,6 +96,9 @@ For further details about how to connect to an EC2 Instance please see the respe
     terraform plan -destroy -out=plan.out
     terraform apply plan.out
     ```
+
+2. Optional: Enforce deletion of AWS Secretsmanager secrets without recovery 
+For furhter details about how to enforce the secret deletion please see the respective [documentation](SETUP.md#delete-ec2-instance-and-infrastructure).
  
 ## Ansible Playbooks
     

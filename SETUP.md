@@ -183,4 +183,4 @@ for secret in ec2/webserver/private-key ec2/webserver/public-key ; do aws secret
 ```
 
 > [!NOTE]
-> The permanent deletion of secrets in AWS Secretsmanager can take several minutes!
+> The permanent deletion of secrets in AWS Secretsmanager can take several minutes! By default, secrets are kept for recovery for at least 7 days.
