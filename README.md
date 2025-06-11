@@ -25,17 +25,17 @@ For more details about the preconditions please see the [SETUP.md](SETUP.md).
     [webserver]
     ec2-35-158-140-221.eu-central-1.compute.amazonaws.com -> new EC2 Public DNS
     ```
-    > [!TIP]
-    > The command `terraform output` displays the defined output variables.  
-    > Example:
-    > ```bash
-    > ec2_instance_id_webserver = "i-0a6a6ce2956060b99"
-    > ec2_instance_state_webserver = "running"
-    > ec2_instance_webserver = "ec2-35-158-140-221.eu-central-1.compute.amazonaws.com"
-    > ec2_instance_webserver_private_ip = "172.31.32.110"
-    > ec2_instance_webserver_public_ip = "35.158.140.221"
-    > ec2_key_aws_ssm_webserver = "arn:aws:secretsmanager:eu-central-1:723952339148:secret:ec2/webserver/private-key-7Uxopv"
-    > ```
+> [!TIP]
+> The command `terraform output` displays the defined output variables.  
+> Example:
+> ```bash
+> ec2_instance_id_webserver = "i-0a6a6ce2956060b99"
+> ec2_instance_state_webserver = "running"
+> ec2_instance_webserver = "ec2-35-158-140-221.eu-central-1.compute.amazonaws.com"
+> ec2_instance_webserver_private_ip = "172.31.32.110"
+> ec2_instance_webserver_public_ip = "35.158.140.221"
+> ec2_key_aws_ssm_webserver = "arn:aws:secretsmanager:eu-central-1:723952339148:secret:ec2/webserver/private-key-7Uxopv"
+> ```
 4. Build new docker image version
     ```bash
     ansible-playbook -i inventories/demo \
@@ -60,31 +60,31 @@ For more details about the preconditions please see the [SETUP.md](SETUP.md).
 For further details about how to connect to an EC2 Instance please see the respective [documentation](SETUP.md#connect-to-ec2-instance)
 
 7. Access the deployed web application under [https://app-rgitoh.zapto.org](https://app-rgitoh.zapto.org).
-    > [!NOTE]
-    > The web application is also available with port 80 ([http://app-rgitoh.zapto.org](http://app-rgitoh.zapto.org)). However, nginx is configured to automatically redirect any http request to https:
-    > ```bash
-    > server {
-    >   listen 80;
-    >   server_name app-rgitoh.zapto.org;
-    >   return 301 https://$host$request_uri;
-    > }
-    >
-    > server {
-    >   listen 443 ssl;
-    >   server_name app-rgitoh.zapto.org;
-    >
-    >   ssl_certificate /etc/letsencrypt/live/app-rgitoh.zapto.org/fullchain.pem;
-    >   ssl_certificate_key /etc/letsencrypt/live/app-rgitoh.zapto.org/privkey.pem;
-    >
-    >   location / {
-    >       proxy_pass http://tweet-app:80;
-    >       proxy_set_header Host $host;
-    >       proxy_set_header X-Real-IP $remote_addr;
-    >       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    >       proxy_set_header X-Forwarded-Proto $scheme;
-    >   }
-    > }
-    > ```
+> [!NOTE]
+> The web application is also available with port 80 ([http://app-rgitoh.zapto.org](http://app-rgitoh.zapto.org)). However, nginx is configured to automatically redirect any http request to https:
+> ```bash
+> server {
+>   listen 80;
+>   server_name app-rgitoh.zapto.org;
+>   return 301 https://$host$request_uri;
+> }
+>
+> server {
+>   listen 443 ssl;
+>   server_name app-rgitoh.zapto.org;
+>
+>   ssl_certificate /etc/letsencrypt/live/app-rgitoh.zapto.org/fullchain.pem;
+>   ssl_certificate_key /etc/letsencrypt/live/app-rgitoh.zapto.org/privkey.pem;
+>
+>   location / {
+>       proxy_pass http://tweet-app:80;
+>       proxy_set_header Host $host;
+>       proxy_set_header X-Real-IP $remote_addr;
+>       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+>       proxy_set_header X-Forwarded-Proto $scheme;
+>   }
+> }
+> ```
 
 ## Steps to decomission the whole infrastructure
 
