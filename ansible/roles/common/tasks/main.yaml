@@ -1,0 +1,8 @@
+- name: Create temporary Ansible directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ ansible_tmp_directory }}"
+    state: directory
+    owner: admin
+    group: admin
+    recurse: true
