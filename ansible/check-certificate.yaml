@@ -6,5 +6,5 @@
 - hosts: webserver
   gather_facts: false
   roles:
+    - role: 'common'
     - role: 'certbot_check_only'
-      become: true

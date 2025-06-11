@@ -5,8 +5,8 @@
     - role: get_private_key_from_aws_secretsmanager
 - hosts: buildserver
   gather_facts: false
-  become: true
   roles:
+    - role: 'common'
     - role: 'roles/build'
 - hosts: webserver
   gather_facts: false
@@ -20,4 +20,3 @@
   roles:
     - role: 'roles/nginx'
     - role: 'roles/compose'
-      become: true

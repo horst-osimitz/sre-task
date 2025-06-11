@@ -10,8 +10,7 @@
     docker_conf_dir: /tmp/ansible/docker
     certbot_webroot: /tmp/ansible/certbot/webroot
   roles:
+    - role: 'common'
     - role: 'certbot_check_only'
-      become: true
     - role: 'certbot'
-      become: true
       when: not ( cert_valid | default(false) | bool )

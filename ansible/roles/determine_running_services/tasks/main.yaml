@@ -1,4 +1,5 @@
 - name: Get container info for each service
+  become: true
   community.docker.docker_container_info:
     name: "{{ item }}"
   loop: "{{ services }}"

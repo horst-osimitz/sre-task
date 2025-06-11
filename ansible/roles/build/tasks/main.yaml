@@ -22,11 +22,13 @@
     version: "{{ branch }}"
 
 - name: Build image with {{ image_tag }} tag
+  become: true
   ansible.builtin.command:
     cmd: |
       docker buildx build {{ git_checkout_dir }}/{{ repository }} --tag {{ image_name }}:{{ image_tag }} --output "type=docker" --progress plain
 
 - name: Tag image with latest tag
+  become: true
   community.docker.docker_image_tag:
     name: "{{ image_name }}:{{ image_tag }}"
     repository: ["{{ image_name }}:latest"]

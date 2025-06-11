@@ -1,10 +1,12 @@
 - name: Start docker-compose services
+  become: true
   ansible.builtin.command: docker-compose up -d
   args:
     chdir: "{{ docker_conf_dir }}"
   listen: "start docker services"
 
 - name: Recreate docker-compose services
+  become: true
   ansible.builtin.shell: |
     docker-compose down
     docker-compose up -d
@@ -13,6 +15,7 @@
   listen: "recreate docker services"
 
 - name: Stop docker-compose services
+  become: true
   ansible.builtin.command: docker-compose stop
   args:
     chdir: "{{ docker_conf_dir }}"

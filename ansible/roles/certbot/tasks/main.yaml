@@ -4,6 +4,7 @@
     need_cert_renewal: "{{ (cert_file_exists | default(false) | bool) and not (cert_valid | default(false) | bool) }}"
 
 - name: Run certbot to issue new certificate
+  become: true
   command: >
     docker run --rm
     -v {{ certbot_webroot }}:/var/www/certbot
@@ -19,6 +20,7 @@
   when: need_cert_issuance
 
 - name: Run certbot to renew certificate
+  become: true
   command: >
     docker run --rm
     -v {{ certbot_webroot }}:/var/www/certbot
@@ -47,12 +49,14 @@
 - name: Wait for Certbot certificate and key
   block:
     - name: Wait for fullchain.pem
+      become: true
       wait_for:
         path: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
         state: present
         timeout: 120
 
     - name: Wait for privkey.pem
+      become: true
       wait_for:
         path: /etc/letsencrypt/live/{{ domain_name }}/privkey.pem
         state: present

@@ -1,10 +1,13 @@
 ---
 - name: Create directories for NGINX and certs
+  become: true
   file:
     path: "{{ item }}"
     state: directory
     recurse: true
+    owner: admin
   loop: ["{{ nginx_conf_dir }}","{{ nginx_conf_dir }}/prepare"]
+
 
 - name: Create NGINX reverse proxy config for certbot
   ansible.builtin.template:
