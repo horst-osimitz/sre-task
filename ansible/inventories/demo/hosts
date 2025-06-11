@@ -1,8 +1,8 @@
 [buildserver]
-ec2-63-178-167-177.eu-central-1.compute.amazonaws.com
+ec2-63-178-41-40.eu-central-1.compute.amazonaws.com
 
 [webserver]
-ec2-63-178-167-177.eu-central-1.compute.amazonaws.com
+ec2-63-178-41-40.eu-central-1.compute.amazonaws.com
 
 [buildserver:vars]
 ansible_user=admin
