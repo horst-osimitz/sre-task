@@ -62,22 +62,22 @@ For more details about the preconditions please see the [SETUP.md](SETUP.md).
 6. Optional: Connect to EC2 Instance  
 For further details about how to connect to an EC2 Instance please see the respective [documentation](SETUP.md#connect-to-ec2-instance).
 
-7. Access the deployed web application under [https://app-rgitoh.zapto.org](https://app-rgitoh.zapto.org).
+7. Access the deployed web application under [https://app-rgitoh.ddns.net](https://app-rgitoh.ddns.net).
 > [!NOTE]
-> The web application is also available with port 80 ([http://app-rgitoh.zapto.org](http://app-rgitoh.zapto.org)). However, nginx is configured to automatically redirect any http request to https:
+> The web application is also available with port 80 ([http://app-rgitoh.ddns.net](http://app-rgitoh.ddns.net)). However, nginx is configured to automatically redirect any http request to https:
 > ```bash
 > server {
 >   listen 80;
->   server_name app-rgitoh.zapto.org;
+>   server_name app-rgitoh.ddns.net;
 >   return 301 https://$host$request_uri;
 > }
 >
 > server {
 >   listen 443 ssl;
->   server_name app-rgitoh.zapto.org;
+>   server_name app-rgitoh.ddns.net;
 >
->   ssl_certificate /etc/letsencrypt/live/app-rgitoh.zapto.org/fullchain.pem;
->   ssl_certificate_key /etc/letsencrypt/live/app-rgitoh.zapto.org/privkey.pem;
+>   ssl_certificate /etc/letsencrypt/live/app-rgitoh.ddns.net/fullchain.pem;
+>   ssl_certificate_key /etc/letsencrypt/live/app-rgitoh.ddns.net/privkey.pem;
 >
 >   location / {
 >       proxy_pass http://tweet-app:80;
@@ -169,7 +169,7 @@ Deploys and starts the application and NGINX as a reverse-proxy. Additionally, c
     nginx_conf_dir: /tmp/ansible/nginx
     docker_conf_dir: /tmp/ansible/docker
     certbot_webroot: /tmp/ansible/certbot/webroot
-    domain_name: app-rgitoh.zapto.org
+    domain_name: app-rgitoh.ddns.net
     email: admin@rgit.at
   roles:
     - role: 'roles/nginx'
@@ -223,7 +223,7 @@ Builds a new docker image and deploys it immediately after.
     docker_conf_dir: /tmp/ansible/docker
     ssl_cert_dir: /tmp/ansible/nginx-cert
     certbot_webroot: /tmp/ansible/certbot/webroot
-    domain_name: app-rgitoh.zapto.org
+    domain_name: app-rgitoh.ddns.net
     email: admin@rgit.at
   roles:
     - role: 'roles/nginx'
@@ -262,7 +262,7 @@ Checks SSL certificate validity for a specific domain name.
 ##### Examples
 
 ```bash
-ansible-playbook -i inventories/demo -u ansible check-certificate.yaml --extra-vars='{"domain_name": "app-rgitoh.zapto.org"}'
+ansible-playbook -i inventories/demo -u ansible check-certificate.yaml --extra-vars='{"domain_name": "app-rgitoh.ddns.net"}'
 ```
 
 #### Renew certificate
@@ -288,13 +288,13 @@ Checks the SSL certificate validity and - in case required - renews it.
 ##### Examples
 
 ```bash
-ansible-playbook -i inventories/demo -u ansible renew-certificate.yaml --extra-vars='{"domain_name": "app-rgitoh.zapto.org"}'
+ansible-playbook -i inventories/demo -u ansible renew-certificate.yaml --extra-vars='{"domain_name": "app-rgitoh.ddns.net"}'
 ```
 
 To simulate the you can override the `min_valid_days` variable. For instance, set it to 100 days.
 
 ```bash
-ansible-playbook -i inventories/demo -u ansible renew-certificate.yaml --extra-vars='{"domain_name": "app-rgitoh.zapto.org", "min_valid_days": 100}'
+ansible-playbook -i inventories/demo -u ansible renew-certificate.yaml --extra-vars='{"domain_name": "app-rgitoh.ddns.net", "min_valid_days": 100}'
 ```
 
 Output:
@@ -311,29 +311,29 @@ ok: [ec2-35-158-140-221.eu-central-1.compute.amazonaws.com] => {
     "certbot_renew_output.stdout_lines": [
         "",
         "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
-        "Processing /etc/letsencrypt/renewal/app-rgitoh.zapto.org.conf",
+        "Processing /etc/letsencrypt/renewal/app-rgitoh.ddns.net.conf",
         "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
         "Certificate not yet due for renewal",
         "",
         "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
         "The following certificates are not due for renewal yet:",
-        "  /etc/letsencrypt/live/app-rgitoh.zapto.org/fullchain.pem expires on 2025-09-08 (skipped)",
+        "  /etc/letsencrypt/live/app-rgitoh.ddns.net/fullchain.pem expires on 2025-09-08 (skipped)",
         "No renewals were attempted.",
         "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
     ]
 }
 ```
 
-The Let's Encrypt ACME Server only allows a renewal 30 days before expiry. See the `/etc/letsencrypt/renewal/app-rgitoh.zapto.org.conf` for further details:
+The Let's Encrypt ACME Server only allows a renewal 30 days before expiry. See the `/etc/letsencrypt/renewal/app-rgitoh.ddns.net.conf` for further details:
 
 ```bash
 # renew_before_expiry = 30 days
 version = 4.0.0
-archive_dir = /etc/letsencrypt/archive/app-rgitoh.zapto.org
-cert = /etc/letsencrypt/live/app-rgitoh.zapto.org/cert.pem
-privkey = /etc/letsencrypt/live/app-rgitoh.zapto.org/privkey.pem
-chain = /etc/letsencrypt/live/app-rgitoh.zapto.org/chain.pem
-fullchain = /etc/letsencrypt/live/app-rgitoh.zapto.org/fullchain.pem
+archive_dir = /etc/letsencrypt/archive/app-rgitoh.ddns.net
+cert = /etc/letsencrypt/live/app-rgitoh.ddns.net/cert.pem
+privkey = /etc/letsencrypt/live/app-rgitoh.ddns.net/privkey.pem
+chain = /etc/letsencrypt/live/app-rgitoh.ddns.net/chain.pem
+fullchain = /etc/letsencrypt/live/app-rgitoh.ddns.net/fullchain.pem
 
 # Options used in the renewal process
 [renewalparams]
@@ -343,7 +343,7 @@ webroot_path = /var/www/certbot,
 server = https://acme-v02.api.letsencrypt.org/directory
 key_type = ecdsa
 [[webroot_map]]
-app-rgitoh.zapto.org = /var/www/certbot
+app-rgitoh.ddns.net = /var/www/certbot
 ```
 
 To automatically check the SSL certificate and renew it in case required, crontab can be used.
@@ -360,6 +360,6 @@ To automatically check the SSL certificate and renew it in case required, cronta
     ```
 2. Add new cron job:
     ```bash
-    0 23 * * * TZ=Europe/Vienna /Users/horstosimitz/github/com/horst-osimitz/sre-task/ansible/scripts/renew_certicates.sh app-rgitoh.zapto.org
+    0 23 * * * TZ=Europe/Vienna /Users/horstosimitz/github/com/horst-osimitz/sre-task/ansible/scripts/renew_certicates.sh app-rgitoh.ddns.net
     ```
-    Explanation: Every day at 23:00 in Europe/Vienna time zone the shell script is executed to check and renew the SSL certificate for the domain name `app-rgitoh.zapto.org`. The Ansible playbook output will be redirected in a seperate log file `/var/log/ansible/renew_certificate_app.log`.
+    Explanation: Every day at 23:00 in Europe/Vienna time zone the shell script is executed to check and renew the SSL certificate for the domain name `app-rgitoh.ddns.net`. The Ansible playbook output will be redirected in a seperate log file `/var/log/ansible/renew_certificate_app.log`.
