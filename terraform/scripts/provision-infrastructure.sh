@@ -31,7 +31,6 @@ elif [ $TF_STATUS_CODE -eq 2 ] ; then
         read continue
         if [[ "$continue" =~ ^[Yy]$ ]] ; then
             terraform apply plan.out
-            rm ../plan.out
         else
             echo "Aborted!"
         fi

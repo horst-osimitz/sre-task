@@ -35,7 +35,6 @@ elif [ $TF_STATUS_CODE -eq 2 ] ; then
             for secret in ec2/webserver/private-key ec2/webserver/public-key ; do
                 aws secretsmanager delete-secret --force-delete-without-recovery --secret-id $secret
             done
-            rm ../plan.out
         else
             echo "Aborted!"
         fi
