@@ -84,6 +84,10 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         "rtb-0ad33d4e96db16415"
     ]
     ```
+- S3 Bucket:
+    ```bash
+    aws s3api create-bucket --bucket tf-backend-rgitoh --region eu-central-1 --acl private --create-bucket-configuration '{"LocationConstraint": "eu-central-1"}'
+    ```
 ### Steps
 
 #### Install AWS CLI
@@ -94,6 +98,23 @@ sudo installer -pkg AWSCLIV2.pkg -target /
 ```
 
 #### Provision EC2 instance
+
+> [!NOTE]
+> To help provisioning or deleting the EC2 Instance, shell scripts have been created:
+> ```bash
+> terraform/scripts
+> ├── delete-infrastructure.sh
+> └── provision-infrastructure.sh
+> 
+> 1 directory, 2 files
+> ```
+> Examples:
+> ```bash
+> bash scripts/provision-infrastructure.sh ec2
+> ```
+> ```bash
+> bash scripts/delete-infrastructure.sh ec2
+> ```
 
 The following resources are required:
 
@@ -107,23 +128,23 @@ Used tool: **Terraform**
 > Folder structure
 > ```bash
 > terraform
-> └── ec2
->     ├── config.tf
->     ├── ec2-key-webserver.pem
->     ├── ec2-webserver-keypair.tf
->     ├── ec2-webserver.tf
->     ├── elastic-ip.tf
->     ├── internet-gateway.tf
->     ├── main.tf
->     ├── outputs.tf
->     ├── plan.out
->     ├── security_group_webserver.tf
->     ├── terraform.tfstate
->     ├── terraform.tfstate.backup
->     └── userdata
->         └── webserver-userdata.sh
+> ├── ec2
+> │   ├── config.tf
+> │   ├── ec2-key-webserver.pem
+> │   ├── ec2-webserver-keypair.tf
+> │   ├── ec2-webserver.tf
+> │   ├── elastic-ip.tf
+> │   ├── internet-gateway.tf
+> │   ├── main.tf
+> │   ├── outputs.tf
+> │   ├── security_group_webserver.tf
+> │   └── userdata
+> │       └── webserver-userdata.sh
+> └── scripts
+>     ├── delete-infrastructure.sh
+>     └── provision-infrastructure.sh
 > 
-> 3 directories, 13 files
+> 4 directories, 12 files
 >```
 
 #### Get EC2 Private Key from AWS Secretsmanager
